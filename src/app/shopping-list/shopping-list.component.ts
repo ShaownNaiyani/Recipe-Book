@@ -12,6 +12,12 @@ export class ShoppingListComponent {
     new Ingredient('Orange', 10),
   ];
 
+  onIngredientAdded(eventData:Ingredient){
+
+    this.ingredients.push(eventData);
+
+  }
+
 
 
 }
