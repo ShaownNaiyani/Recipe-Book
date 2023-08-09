@@ -3,7 +3,7 @@ import { Ingredient } from "../shared/ingredient.model";
 import { Subject} from "rxjs/Subject";
 export class ShoppingListService{
 
-    changedIngredients = new EventEmitter<Ingredient[]>();
+    changedIngredients = new Subject<Ingredient[]>();
     startEditing = new Subject<number>();
 
     private ingredients: Ingredient[] = [
@@ -21,7 +21,7 @@ export class ShoppingListService{
     addIngredient(ingredient:Ingredient){
 
         this.ingredients.push(ingredient);
-        this.changedIngredients.emit(this.ingredients);
+        this.changedIngredients.next(this.ingredients);
 
     }
 
@@ -32,7 +32,7 @@ export class ShoppingListService{
         // }
 
         this.ingredients.push(...ingredients);
-        this.changedIngredients.emit(this.ingredients);
+        this.changedIngredients.next(this.ingredients);
        
 
     }
