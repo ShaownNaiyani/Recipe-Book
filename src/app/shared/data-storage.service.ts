@@ -12,11 +12,25 @@ export class DataStorageService{
 
     constructor(private http:HttpClient,private recipeService:RecipeService,private authService:AuthService){}
 
+    // storeRecipe(){
+
+    //     const recipes =this.recipeService.getRecipes()
+    //     return this.http
+    //     .put('https://recipebook-48c73-default-rtdb.firebaseio.com/recipes.json',recipes)
+    //     .subscribe(
+    //         (response)=>{
+    //             console.log(response)
+    //         }
+    //     )
+
+    // }
+
     storeRecipe(){
 
         const recipes =this.recipeService.getRecipes()
+        console.log(recipes);
         return this.http
-        .put('https://recipebook-48c73-default-rtdb.firebaseio.com/recipes.json',recipes)
+        .post('http://localhost:3000/recipe',recipes)
         .subscribe(
             (response)=>{
                 console.log(response)
