@@ -5,12 +5,15 @@ import { Recipe } from "../recipes/recipe.model";
 import { RecipeService } from "../recipes/recipe.service";
 import { map, tap,take, exhaustMap } from "rxjs/operators";
 import { AuthService } from "../auth/auth.service";
+import { forkJoin } from "rxjs";
 
 
 @Injectable({providedIn:'root'})
 export class DataStorageService{
 
-    constructor(private http:HttpClient,private recipeService:RecipeService,private authService:AuthService){}
+    constructor(private http:HttpClient,
+                private recipeService:RecipeService,
+                private authService:AuthService){}
 
     // storeRecipe(){
 
@@ -28,7 +31,6 @@ export class DataStorageService{
     storeRecipe(){
 
         const recipes =this.recipeService.getRecipes()
-        console.log(recipes);
         return this.http
         .post('http://localhost:3000/recipe',recipes)
         .subscribe(
@@ -36,7 +38,7 @@ export class DataStorageService{
                 console.log(response)
             }
         )
-
+    
     }
 
     fetchRecipe(){
@@ -45,7 +47,6 @@ export class DataStorageService{
                 .get<Recipe[]>(
                     'https://recipebook-48c73-default-rtdb.firebaseio.com/recipes.json'
                 ).pipe(
-
                         map( recipes =>{
                             return recipes.map(recipe =>{
                                 return {...recipe,ingredients: recipe.ingredients ? recipe.ingredients : []}
