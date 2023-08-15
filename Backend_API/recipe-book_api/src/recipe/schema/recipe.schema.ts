@@ -1,9 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
+import { Ingredients } from "../interface/ingredient.interface";
 
-import { Ingredients } from "src/ingredients/schema/ingredients.schema";
 
-export type RecipeDocument = Recipe & Document;
 
 @Schema({collection:'Recipe'})
 export class Recipe {

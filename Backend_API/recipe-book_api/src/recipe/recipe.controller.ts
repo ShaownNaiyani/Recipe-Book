@@ -1,6 +1,8 @@
-import { Body, Controller,Get,Post } from '@nestjs/common';
+import { Body, Controller,Delete,Get,Param,Post, Put } from '@nestjs/common';
 import { RecipeService } from './recipe.service';
 import { Recipe } from './schema/recipe.schema';
+import { CreateRecipeDto } from './dto/create-recipe.dto';
+import { UpdateRecipeDto } from './dto/update-recipe.dto';
 
 @Controller('recipe')
 export class RecipeController {
@@ -12,14 +14,35 @@ export class RecipeController {
         return this.recipeService.getRecipes();
     }
 
+    @Get('/:id')
+    async getSingleRecipe(@Param('id')recipeId:string){
+        return await this.recipeService.getRecipe(recipeId);
+    }
+
     @Post()
-    async StoreRecipes(@Body() recipes:Recipe){
+    async StoreRecipes(@Body() recipes:CreateRecipeDto[]){
 
-        // console.log(recipes);
-
-        return this.recipeService.StoreRecipe(recipes);
+        return await this.recipeService.createRecipes(recipes);
 
     }
+
+    @Put('/:id')
+
+    async UpdateRecipe(@Param('id')recipeId:string,@Body()updateRecipeDto:UpdateRecipeDto){
+
+        return  await this.recipeService.UpdateRecipe(recipeId,updateRecipeDto);
+
+    }
+
+    @Delete('/:id')
+
+    async DeleteRecipe(@Param('id')recipeId:string){
+
+        return  await this.recipeService.DeleteRecipe(recipeId);
+
+    }
+
+
 
 
 }
