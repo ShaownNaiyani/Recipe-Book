@@ -10,7 +10,11 @@
       *ngFor="let recipeEl of recipes; let i = index"
       [recipe]="recipeEl"
       [index] = "recipeEl._id"
-      ></app-recipe-item>
+      >
+    <ng-container>
+      
+    </ng-container>
+    </app-recipe-item>
   </div>
 </div>
 

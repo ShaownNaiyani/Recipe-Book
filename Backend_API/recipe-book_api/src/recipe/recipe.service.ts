@@ -11,24 +11,32 @@ export class RecipeService {
 
     constructor(@InjectModel("Recipe") private recipeModel: Model<IRecipe>){}
 
-    async getRecipes() : Promise<IRecipe[]>{
+    async getRecipes() {
         return await this.recipeModel.find().exec();
-    }
+      }
 
     async getRecipe(recipeId:string) :Promise<IRecipe>{
         return await this.recipeModel.findById(recipeId).exec();
     } 
 
     async  createRecipes(recipes: CreateRecipeDto[]): Promise<IRecipe[]> {
+
         const savedRecipes: IRecipe[] = [];
     
         for (const recipe of recipes) {
+            const recipeExist = await this.recipeModel.findOne({
+                name: recipe.name,
+              });
+
+            if(!recipeExist){
+                   
             try {
                 const newRecipe = new this.recipeModel(recipe);
                 const savedRecipe = await newRecipe.save();
                 savedRecipes.push(savedRecipe);
-            } catch (error) {
-                console.error(`Error saving recipe: ${error}`);
+                } catch (error) {
+                    console.error(`Error saving recipe: ${error}`);
+                }
             }
         }
     
