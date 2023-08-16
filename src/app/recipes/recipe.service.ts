@@ -3,9 +3,18 @@ import { Recipe } from "./recipe.model";
 import { Ingredient } from "../shared/ingredient.model";
 import { ShoppingListService } from "../shopping-list/shopping-list.service";
 import { Subject } from "rxjs";
+import { MongoIdRecipe } from "./moidrecipe.model";
 
 @Injectable()
 export class RecipeService{
+
+  recipe: MongoIdRecipe ={
+    _id: '',
+    name: '',
+    description: '',
+    imagePath: '',
+    ingredients: [],
+    };
 
 
   recipeChanged = new Subject<Recipe[]>()
@@ -18,6 +27,8 @@ export class RecipeService{
 
       setRecipes(recipes:Recipe[]){
 
+          console.log(recipes);
+
           this.recipes= recipes;
           this.recipeChanged.next(this.recipes.slice());
         
@@ -27,7 +38,7 @@ export class RecipeService{
         return this.recipes.slice();
       }
 
-      getRecipe(index:number){
+      getRecipe(index:string){
 
         return this.recipes[index];
 
@@ -46,16 +57,19 @@ export class RecipeService{
 
       }
 
-      updateRecipe(index:number, newRecipe: Recipe){
+      updateRecipe(index:string, newRecipe: MongoIdRecipe){
 
-        this.recipes[index]=newRecipe;
-        this.recipeChanged.next(this.recipes.slice());
+        // this.recipes[index]=newRecipe;
+        // this.recipeChanged.next(this.recipes.slice());
+
+        
 
       }
 
       deleteRecipe(index:number){
         this.recipes.splice(index,1);
-        this.recipeChanged.next(this.recipes.slice())
+        this.recipeChanged.next(this.recipes.slice());
+
       }
     
 

@@ -6,6 +6,7 @@ import { RecipeService } from "../recipes/recipe.service";
 import { map, tap,take, exhaustMap } from "rxjs/operators";
 import { AuthService } from "../auth/auth.service";
 import { forkJoin } from "rxjs";
+import { MongoIdRecipe } from "../recipes/moidrecipe.model";
 
 
 @Injectable({providedIn:'root'})
@@ -41,12 +42,13 @@ export class DataStorageService{
     
     }
 
-    fetchRecipe(){
+    fetchRecipeAll(){
 
             return this.http
                 .get<Recipe[]>(
-                    'https://recipebook-48c73-default-rtdb.firebaseio.com/recipes.json'
+                    'http://localhost:3000/recipe'
                 ).pipe(
+                    
                         map( recipes =>{
                             return recipes.map(recipe =>{
                                 return {...recipe,ingredients: recipe.ingredients ? recipe.ingredients : []}
@@ -54,6 +56,8 @@ export class DataStorageService{
                         }),
 
                         tap( recipes =>{
+
+                            console.log(recipes);
                             this.recipeService.setRecipes(recipes)
                         }),
 
@@ -67,6 +71,33 @@ export class DataStorageService{
         // .subscribe((recipes:Recipe[])=>{
         //     this.recipeService.setRecipes(recipes)
         // })
+    }
+
+    fetchRecipeById(id:string){
+        return this.http.get<MongoIdRecipe>(
+            `http://localhost:3000/recipe/${id}`
+        )
+    }
+
+    updateRecipeById(id:string,recipe:MongoIdRecipe){
+        return this.http.patch<MongoIdRecipe>(
+            `http://localhost:3000/recipe/${id}`,recipe
+        ).subscribe(
+            (response)=>{
+                console.log(response)
+            }
+        )
+
+    }
+
+    deleteReipeById(id:string){
+        return this.http.delete(
+            `http://localhost:3000/recipe/${id}`
+        ).subscribe(
+            (response)=>{
+                console.log(response)
+            }
+        )
     }
 
 }
