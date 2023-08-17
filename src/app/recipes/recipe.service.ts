@@ -8,22 +8,12 @@ import { MongoIdRecipe } from "./moidrecipe.model";
 @Injectable()
 export class RecipeService{
 
-  recipe: MongoIdRecipe ={
-    _id: '',
-    name: '',
-    description: '',
-    imagePath: '',
-    ingredients: [],
-    };
-
 
   recipeChanged = new Subject<Recipe[]>()
   
   private recipes:Recipe[]=[];
 
-      constructor(private slService:ShoppingListService){
-
-      }
+      constructor(private slService:ShoppingListService){}
 
       setRecipes(recipes:Recipe[]){
 
@@ -57,7 +47,7 @@ export class RecipeService{
 
       }
 
-      updateRecipe(index:string, newRecipe: MongoIdRecipe){
+      updateRecipe(index:string, newRecipe: Recipe){
 
         // this.recipes[index]=newRecipe;
         // this.recipeChanged.next(this.recipes.slice());

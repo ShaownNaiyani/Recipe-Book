@@ -71,6 +71,10 @@ export class RecipeDetailComponent implements OnInit {
 
     if(this.id){
       this.dataStorageService.deleteReipeById(this.id); //API call
+      setTimeout(() => {
+        this.dataStorageService.fetchRecipeAll().subscribe()
+      }, 10);
+      
       this.router.navigate(['../'],{relativeTo: this.route})
     }  
 

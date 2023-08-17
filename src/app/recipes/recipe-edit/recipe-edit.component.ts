@@ -14,7 +14,7 @@ import { MongoIdRecipe } from '../moidrecipe.model';
 export class RecipeEditComponent implements OnInit {
   id : string;
   editMode:boolean=false;
-  recipeForm: FormGroup;
+  recipeForm: FormGroup ;
 
   recipe: MongoIdRecipe ={
     _id: '',
@@ -35,17 +35,8 @@ export class RecipeEditComponent implements OnInit {
     subscribe((params:Params)=>{
 
       this.id = params['id'];
+      // console.log(this.id);
       this.editMode= params['id'] != null;
-      if(this.id){
-        this.dataStorageService.fetchRecipeById(this.id).subscribe( (data) =>{
-          this.recipe._id = data._id;
-          this.recipe.name = data.name;
-          this.recipe.description = data.description;
-          this.recipe.imagePath = data.imagePath;
-          this.recipe.ingredients = data.ingredients;
-        });
-      }
-     
       this.initForm();
       
     })
@@ -57,33 +48,51 @@ export class RecipeEditComponent implements OnInit {
     let recipeDescription='';
     let recipeIngredients = new FormArray([]);
    
-    if(this.editMode)
-    {
-      // const Recipe = this.recipeService.getRecipe(this.id);
-      recipeName=this.recipe.name;
-      recipeImagepath=this.recipe.imagePath;
-      recipeDescription=this.recipe.description;
-
-      if(this.recipe['ingredients']){
-        for(let ingredient of this.recipe.ingredients){
-          recipeIngredients.push(
-            new FormGroup({
-              'name':new FormControl(ingredient.name,Validators.required),
-              'amount':new FormControl(ingredient.amount,
-                [Validators.required,
-                  Validators.pattern(/^[1-9]+[0-9]*$/)])
-            })
-          )
+    if (this.editMode) {
+      this.dataStorageService.fetchRecipeById(this.id).subscribe((data) => {
+        this.recipe._id = data._id;
+        this.recipe.name = data.name;
+        this.recipe.description = data.description;
+        this.recipe.imagePath = data.imagePath;
+        this.recipe.ingredients = data.ingredients;
+    
+        // Now assign the values to the form fields
+        recipeName = this.recipe.name;
+        recipeImagepath = this.recipe.imagePath;
+        recipeDescription = this.recipe.description;
+    
+        if (this.recipe['ingredients']) {
+          for (let ingredient of this.recipe.ingredients) {
+            recipeIngredients.push(
+              new FormGroup({
+                'name': new FormControl(ingredient.name, Validators.required),
+                'amount': new FormControl(
+                  ingredient.amount,
+                  [Validators.required, Validators.pattern(/^[1-9]+[0-9]*$/)]
+                )
+              })
+            );
+          }
         }
-      }
+    
+        this.recipeForm = new FormGroup({
+          'name': new FormControl(recipeName, Validators.required),
+          'imagePath': new FormControl(recipeImagepath, Validators.required),
+          'description': new FormControl(recipeDescription, Validators.required),
+          'ingredients': recipeIngredients
+        });
+      });
     }
-
-    this.recipeForm= new FormGroup({
-      'name': new FormControl(recipeName,Validators.required),
-      'imagePath': new FormControl(recipeImagepath,Validators.required),
-      'description': new FormControl(recipeDescription,Validators.required),
-      'ingredients': recipeIngredients
-    })
+    else
+    {
+      this.recipeForm = new FormGroup({
+        'name': new FormControl(recipeName, Validators.required),
+        'imagePath': new FormControl(recipeImagepath, Validators.required),
+        'description': new FormControl(recipeDescription, Validators.required),
+        'ingredients': recipeIngredients
+      });
+    }
+    
 
   }
 
@@ -92,7 +101,6 @@ export class RecipeEditComponent implements OnInit {
   }
 
   onAddIngredient(){
-
     (<FormArray>this.recipeForm.get('ingredients')).push(
       new FormGroup({
         'name':new FormControl(null,Validators.required),
@@ -125,11 +133,31 @@ export class RecipeEditComponent implements OnInit {
     if(this.editMode){
       // this.recipeService.updateRecipe(this.id,this.recipeForm.value);
       this.dataStorageService.updateRecipeById(this.id,this.recipeForm.value) //API call
+      // this.dataStorageService.storeRecipe()
+      this.dataStorageService.fetchRecipeAll().subscribe()
+      setTimeout(() => { document.location.reload(); }, 50)
+
     }
     else
     {
       this.recipeService.addRecipe(this.recipeForm.value); //API call
+
+      setTimeout(() => {
+        this.dataStorageService.storeRecipe()
+        
+      }, 5);
+
+      setTimeout(() => {
+        this.dataStorageService.fetchRecipeAll().subscribe()
+      }, 10);
+      
+      // this.dataStorageService.fetchRecipeAll().subscribe()
+
     }
+
+
+
+    
 
     this.onCancel();
 

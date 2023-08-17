@@ -31,7 +31,7 @@ export class DataStorageService{
 
     storeRecipe(){
 
-        const recipes =this.recipeService.getRecipes()
+        const recipes = this.recipeService.getRecipes()
         return this.http
         .post('http://localhost:3000/recipe',recipes)
         .subscribe(
