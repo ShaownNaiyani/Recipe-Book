@@ -16,19 +16,6 @@ export class DataStorageService{
                 private recipeService:RecipeService,
                 private authService:AuthService){}
 
-    // storeRecipe(){
-
-    //     const recipes =this.recipeService.getRecipes()
-    //     return this.http
-    //     .put('https://recipebook-48c73-default-rtdb.firebaseio.com/recipes.json',recipes)
-    //     .subscribe(
-    //         (response)=>{
-    //             console.log(response)
-    //         }
-    //     )
-
-    // }
-
     storeRecipe(){
 
         const recipes = this.recipeService.getRecipes()
@@ -48,7 +35,6 @@ export class DataStorageService{
                 .get<Recipe[]>(
                     'http://localhost:3000/recipe'
                 ).pipe(
-                    
                         map( recipes =>{
                             return recipes.map(recipe =>{
                                 return {...recipe,ingredients: recipe.ingredients ? recipe.ingredients : []}
@@ -62,15 +48,7 @@ export class DataStorageService{
                         }),
 
                       )
-            
         
-        
-        
-        // this.http
-        // .get('https://recipebook-48c73-default-rtdb.firebaseio.com/recipes.json')
-        // .subscribe((recipes:Recipe[])=>{
-        //     this.recipeService.setRecipes(recipes)
-        // })
     }
 
     fetchRecipeById(id:string){
@@ -99,5 +77,7 @@ export class DataStorageService{
             }
         )
     }
+
+
 
 }

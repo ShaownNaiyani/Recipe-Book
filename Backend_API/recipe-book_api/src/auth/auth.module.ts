@@ -1,18 +1,14 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { UserDetails, UserDetailsSchema } from './schema/auth.schema';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
+import { UserService } from 'src/user/user.service';
+import { UserModule } from 'src/user/user.module';
+import { PassportModule } from '@nestjs/passport';
+import { LocalStrategy } from './local.strategy';
 
 @Module({
-    imports:[
-        MongooseModule.forFeature([{  // forFeature select korbo child componen
-            name:'UserDetails',
-            schema: UserDetailsSchema,
-            collection:'UserDetails'
-        }])
-    ],
-    providers: [AuthService],
-    controllers: [AuthController]
+  imports: [UserService,UserModule,PassportModule],
+  providers: [AuthService, LocalStrategy],
+  controllers: [AuthController]
 })
 export class AuthModule {}

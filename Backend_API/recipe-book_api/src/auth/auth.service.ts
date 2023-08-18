@@ -1,13 +1,19 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { UserDetails, UserDetailsDocument } from './schema/auth.schema';
+import { Injectable ,forwardRef,Inject} from '@nestjs/common';
+import { RecipeService } from 'src/recipe/recipe.service';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
-    constructor(@InjectModel("UserDetails") private userdetailsModel = Model<UserDetailsDocument>){}
 
-    async getAll() : Promise<UserDetails[]>{
-        return this.userdetailsModel.find().exec();
-    }
+    constructor(private userService:UserService) {}
+
+    async validateUser(username: string, pass: string): Promise<any> {
+        const user = await this.userService.findUser(username);
+        if (user && user.password === pass) {
+          const { password, ...result } = user;
+          return result;
+        }
+        return null;
+      } 
+
 }
