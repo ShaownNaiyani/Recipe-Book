@@ -29,7 +29,7 @@ export class DataStorageService{
     fetchRecipeAll(){
 
             return this.http
-                .get<Recipe[]>(
+                .get<MongoIdRecipe[]>(
                     'http://localhost:3000/recipe'
                 ).pipe(
                         map( recipes =>{
