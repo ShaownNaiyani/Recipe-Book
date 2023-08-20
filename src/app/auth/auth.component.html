@@ -4,12 +4,13 @@
             <p>{{error}}</p> 
         </div> -->
         <app-alert [message]="error" *ngIf="error" (close) = "onHandleError()"></app-alert>
+
         <div *ngIf = "isLoadingMode" style="text-align: center;">
             <app-loading-spinner></app-loading-spinner>
-            <div *ngIf = "isRegistered" style="text-align: center;">
-                <p>Log in Successfull</p>
-            </div>
         </div>
+        <!-- <div *ngIf = "isRegistered" style="text-align: center;">
+            <p>Log in Successfull</p>
+        </div> -->
         
         <form #authForm = "ngForm" (ngSubmit) ="onSubmit(authForm)" *ngIf ="!isLoadingMode">
             <div class="form-group" >

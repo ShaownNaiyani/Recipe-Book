@@ -1,13 +1,14 @@
-import { Controller, Get } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { Controller, Post,Body, HttpCode, UseGuards,Request } from '@nestjs/common';
+import { AuthService } from '../user/auth.service';
+import { LocalStrategy } from '../user/local.strategy';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private userDetails:AuthService){}
 
-    
-    @Get()
-    async getAll(){
-        return this.userDetails.getAll();
-    }
+
+   
+
+   
 }

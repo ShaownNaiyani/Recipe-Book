@@ -1,5 +1,6 @@
 import { EventEmitter, Injectable } from "@angular/core";
 import { Recipe } from "./recipe.model";
+import {HttpClient} from '@angular/common/http'
 import { Ingredient } from "../shared/ingredient.model";
 import { ShoppingListService } from "../shopping-list/shopping-list.service";
 import { Subject } from "rxjs";
@@ -8,29 +9,20 @@ import { MongoIdRecipe } from "./moidrecipe.model";
 @Injectable()
 export class RecipeService{
 
-  recipe: MongoIdRecipe ={
-    _id: '',
-    name: '',
-    description: '',
-    imagePath: '',
-    ingredients: [],
-    };
-
 
   recipeChanged = new Subject<Recipe[]>()
+  fetchedRecipeChanged = new Subject<MongoIdRecipe[]>()
   
   private recipes:Recipe[]=[];
+  private fetchRecipes:MongoIdRecipe[]=[];
 
-      constructor(private slService:ShoppingListService){
+      constructor(private http:HttpClient,private slService:ShoppingListService){}
 
-      }
-
-      setRecipes(recipes:Recipe[]){
+      setRecipes(recipes:MongoIdRecipe[]){
 
           console.log(recipes);
-
-          this.recipes= recipes;
-          this.recipeChanged.next(this.recipes.slice());
+          this.fetchRecipes = recipes
+          this.fetchedRecipeChanged.next(this.fetchRecipes.slice());
         
       }
     
@@ -38,10 +30,14 @@ export class RecipeService{
         return this.recipes.slice();
       }
 
-      getRecipe(index:string){
+      getNewRecipe(index:number){
 
-        return this.recipes[index];
+        return this.fetchRecipes[index];
 
+      }
+
+      getNewRecipes(){
+        return this.fetchRecipes.slice();
       }
 
       onAddShoppinglist(ingredients:Ingredient[]){
@@ -51,26 +47,61 @@ export class RecipeService{
       }
 
       addRecipe(recipe:Recipe){
+        const fetchRecipe = { ...recipe, _id: 'abc' };
 
         this.recipes.push(recipe);
-        this.recipeChanged.next(this.recipes.slice())
+        this.fetchRecipes.push(fetchRecipe);
+        this.fetchedRecipeChanged.next(this.fetchRecipes.slice());
 
       }
 
-      updateRecipe(index:string, newRecipe: MongoIdRecipe){
+      updateRecipe(index:number, newRecipe: Recipe){
 
-        // this.recipes[index]=newRecipe;
-        // this.recipeChanged.next(this.recipes.slice());
+        this.recipes[index]=newRecipe;
+
+        const mongoId = this.fetchRecipes[index]._id; 
+
+        this.fetchRecipes[index].name = newRecipe.name;
+        this.fetchRecipes[index].description = newRecipe.description;
+        this.fetchRecipes[index].imagePath = newRecipe.imagePath;
+        this.fetchRecipes[index].ingredients = newRecipe.ingredients;
+
+        this.http.patch<MongoIdRecipe>(
+              `http://localhost:3000/recipe/${mongoId}`,newRecipe
+          ).subscribe(
+              (response)=>{
+                  console.log(response)
+              }
+          )
+  
+        this.fetchedRecipeChanged.next(this.fetchRecipes.slice());
 
         
 
       }
 
       deleteRecipe(index:number){
-        this.recipes.splice(index,1);
-        this.recipeChanged.next(this.recipes.slice());
+
+       const mongoId=this.fetchRecipes[index]._id;
+
+       this.http.delete(
+              `http://localhost:3000/recipe/${mongoId}`
+          ).subscribe(
+              (response)=>{
+                  console.log(response)
+              }
+          )
+        
+        this.fetchRecipes.splice(index,1);
+        this.fetchedRecipeChanged.next(this.fetchRecipes.slice());
 
       }
+
+      
     
 
 }
+
+// function generateUniqueId() {
+//   throw new Error("Function not implemented.");
+// }

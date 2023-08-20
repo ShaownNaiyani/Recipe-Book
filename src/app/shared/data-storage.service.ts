@@ -1,11 +1,9 @@
 
 import { Injectable } from "@angular/core";
-import {HttpClient, HttpParams} from '@angular/common/http'
+import {HttpClient} from '@angular/common/http'
 import { Recipe } from "../recipes/recipe.model";
 import { RecipeService } from "../recipes/recipe.service";
-import { map, tap,take, exhaustMap } from "rxjs/operators";
-import { AuthService } from "../auth/auth.service";
-import { forkJoin } from "rxjs";
+import { map, tap} from "rxjs/operators";
 import { MongoIdRecipe } from "../recipes/moidrecipe.model";
 
 
@@ -13,25 +11,11 @@ import { MongoIdRecipe } from "../recipes/moidrecipe.model";
 export class DataStorageService{
 
     constructor(private http:HttpClient,
-                private recipeService:RecipeService,
-                private authService:AuthService){}
-
-    // storeRecipe(){
-
-    //     const recipes =this.recipeService.getRecipes()
-    //     return this.http
-    //     .put('https://recipebook-48c73-default-rtdb.firebaseio.com/recipes.json',recipes)
-    //     .subscribe(
-    //         (response)=>{
-    //             console.log(response)
-    //         }
-    //     )
-
-    // }
+                private recipeService:RecipeService){}
 
     storeRecipe(){
 
-        const recipes =this.recipeService.getRecipes()
+        const recipes = this.recipeService.getRecipes()
         return this.http
         .post('http://localhost:3000/recipe',recipes)
         .subscribe(
@@ -45,10 +29,9 @@ export class DataStorageService{
     fetchRecipeAll(){
 
             return this.http
-                .get<Recipe[]>(
+                .get<MongoIdRecipe[]>(
                     'http://localhost:3000/recipe'
                 ).pipe(
-                    
                         map( recipes =>{
                             return recipes.map(recipe =>{
                                 return {...recipe,ingredients: recipe.ingredients ? recipe.ingredients : []}
@@ -62,15 +45,7 @@ export class DataStorageService{
                         }),
 
                       )
-            
         
-        
-        
-        // this.http
-        // .get('https://recipebook-48c73-default-rtdb.firebaseio.com/recipes.json')
-        // .subscribe((recipes:Recipe[])=>{
-        //     this.recipeService.setRecipes(recipes)
-        // })
     }
 
     fetchRecipeById(id:string){
@@ -99,5 +74,7 @@ export class DataStorageService{
             }
         )
     }
+
+
 
 }
