@@ -1,6 +1,6 @@
 import { Component } from "@angular/core";
 import { NgForm } from "@angular/forms";
-import { AuthResponse, AuthService } from "./auth.service";
+import { AuthResponse, NewAuthService } from "./newauth.service";
 import { Observable } from "rxjs";
 import { Router } from "@angular/router";
 
@@ -12,7 +12,7 @@ import { Router } from "@angular/router";
 })
 export class AuthComponent{
 
-    constructor(private authService: AuthService,private router:Router){}
+    constructor(private newauthService: NewAuthService,private router:Router){}
 
     isLoginMode = true;
     isLoadingMode = false;
@@ -33,19 +33,22 @@ export class AuthComponent{
             this.isLoadingMode = true;
 
             if(this.isLoginMode){
-                authObs= this.authService.login(email,password)
+                authObs= this.newauthService.login(email,password)
             }
             else
             {
-                authObs= this.authService.signup(email,password)
+                authObs= this.newauthService.signup(email,password)
 
             }
+
+
             authObs.subscribe(
 
                 resData =>{
                     console.log(resData);
                     this.isLoadingMode=false;
                     this.router.navigate(['/recipes']);
+                   
                 },
 
                 errorMessage => {
@@ -53,6 +56,7 @@ export class AuthComponent{
                     this.isLoadingMode = false;
                 }
             );
+
             form.reset();
         }
     }

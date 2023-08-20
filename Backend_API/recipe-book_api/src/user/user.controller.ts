@@ -1,27 +1,43 @@
-import { Body, Controller, HttpStatus, Post ,Res} from '@nestjs/common';
+import { Body, Controller,UseGuards, Post ,Request,HttpException,HttpStatus} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserService } from './user.service';
-import { response } from 'express';
+import { AuthService } from 'src/user/auth.service';
+import { LocalStrategy } from 'src/user/local.strategy';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('user')
 export class UserController {
 
-    constructor(private userService: UserService){}
 
-    @Post()
-    async signUp(@Res()response,@Body()user:CreateUserDto){
+    
+    constructor(private authService:AuthService,private localStrategy:LocalStrategy){}
+
+
+    @Post('signup')
+    async RegisterUser(@Body()user:CreateUserDto){
+
         try {
-            const newUser = await this.userService.CreateUser(user);
-            return response.status(HttpStatus.CREATED).json({
-            message: 'User has been created successfully',
-            newUser,});
-         } catch (err) {
-            return response.status(HttpStatus.BAD_REQUEST).json({
-            statusCode: 400,
-            message: 'Error: Email Already Registered!',
-            error: 'Bad Request'
-         });
-         }
 
+            return await this.authService.registerUser(user);
+            
+        } catch (error) {
+
+            throw new HttpException({message:'Email_Exists'},HttpStatus.NOT_FOUND);
+            
+        }
+
+      
+    }
+
+    @UseGuards(AuthGuard('local'))
+    @Post('login')
+    async login(@Body() user:CreateUserDto) {
+        try {
+            return await this.localStrategy.validate(user.email,user.password);
+            
+        } catch (error) {
+            throw new HttpException({message:'Wrong_Password_or_Username'},HttpStatus.BAD_REQUEST)
+            
+        }
+      
     }
 }

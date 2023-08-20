@@ -35,7 +35,6 @@ export class RecipeEditComponent implements OnInit {
     subscribe((params:Params)=>{
 
       this.id = params['id'];
-      // console.log(this.id);
       this.editMode= params['id'] != null;
       this.initForm();
       
@@ -74,6 +73,8 @@ export class RecipeEditComponent implements OnInit {
             );
           }
         }
+
+        //For Editing a Recipe
     
         this.recipeForm = new FormGroup({
           'name': new FormControl(recipeName, Validators.required),
@@ -85,6 +86,7 @@ export class RecipeEditComponent implements OnInit {
     }
     else
     {
+      //For add new Recipe
       this.recipeForm = new FormGroup({
         'name': new FormControl(recipeName, Validators.required),
         'imagePath': new FormControl(recipeImagepath, Validators.required),
@@ -135,7 +137,7 @@ export class RecipeEditComponent implements OnInit {
       this.dataStorageService.updateRecipeById(this.id,this.recipeForm.value) //API call
       // this.dataStorageService.storeRecipe()
       this.dataStorageService.fetchRecipeAll().subscribe()
-      setTimeout(() => { document.location.reload(); }, 50)
+      // setTimeout(() => { document.location.reload(); }, 50)
 
     }
     else

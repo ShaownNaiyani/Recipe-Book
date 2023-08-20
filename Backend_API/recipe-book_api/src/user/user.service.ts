@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { IUser } from './interface/user.interface';
@@ -22,12 +22,21 @@ export class UserService {
         }
         else
         {
-            throw new Error('User with this email already exists.'); 
+            throw new HttpException({message:'Email_Exists'},HttpStatus.NOT_FOUND);
         }
     }
 
     async findUser(useremail: string): Promise<IUser | undefined> {
-        return this.userModel.findOne({ email: useremail });
+        const existUser=this.userModel.findOne({ email: useremail });
+
+        if(!existUser)
+        {
+            throw new HttpException({message:'User_not_found'},HttpStatus.NOT_FOUND);
+        }
+
+        return existUser;
+
+
     }
     
 }

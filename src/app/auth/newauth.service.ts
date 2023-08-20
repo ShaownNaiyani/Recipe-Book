@@ -1,91 +1,89 @@
-// import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-// import { Injectable } from "@angular/core";
-// import { BehaviorSubject, Subject, pipe, throwError, } from "rxjs";
-// import { catchError,tap } from "rxjs/operators";
-// import { User } from "./user.model";
-// import { Router } from "@angular/router";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { BehaviorSubject, Subject, pipe, throwError, } from "rxjs";
+import { catchError,tap } from "rxjs/operators";
+import { User } from "./user.model";
+import { Router } from "@angular/router";
 
-// export interface AuthResponse{
-//     registered?:boolean;
-// }
-// @Injectable({providedIn: 'root'})
-// export class AuthService{
+export interface AuthResponse{
+    _id: string,
+    email:string
+}
+@Injectable({providedIn: 'root'})
+export class NewAuthService{
 
-//     tokenExpirationTimer:any;
+    // tokenExpirationTimer:any;
 
-//     user = new BehaviorSubject<User>(null);
+    user = new BehaviorSubject<User>(null);
 
-//     constructor(private http : HttpClient,private router:Router){}
+    constructor(private http : HttpClient,private router:Router){}
 
-//     signup(email:string,password:string){
+    signup(email:string,password:string){
 
-//         return this.http.post<AuthResponse>(
-//             'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAu5jhsNxvJG4UtNKgf_K3iGm0qF5eomzM',
-//             { 
-//                 email: email,
-//                 password: password
-//             })
-//             .pipe(
-//                 catchError(this.handleError),
-//                 tap(
-//                     resData =>{
-//                         this.handleAuthentication(resData.email,resData.)
-//                     }
+        return this.http.post<AuthResponse>(
+            'http://localhost:3000/user/signup',
+            { 
+                email: email,
+                password: password
+            })
+            .pipe(
+                catchError(this.handleError),
+                tap(
+                    resData =>{
+                        this.handleAuthentication(resData.email);
+                    }
 
-//                 )
-//             )
+                )
+            )
 
-//     }
+    }
 
-//     login(email:string,password:string){
-//         return this.http.post<AuthResponse>(
-//             'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAu5jhsNxvJG4UtNKgf_K3iGm0qF5eomzM',
-//             { 
-//                 email: email,
-//                 password: password
-//             }).pipe(
-//                     catchError(this.handleError),
-//                     tap(resData => {
-//                         this.handleAuthentication(resData.email,resData.localId,resData.idToken,+resData.expiresIn)
-//                     })
-//             )
-//     }
-//     private handleAuthentication(
-//         registered:boolean
-//     ){
-//         const user = new User(email,password);
-//         this.user.next(user);
-//         localStorage.setItem('userData',JSON.stringify(user));
+    login(email:string,password:string){
+        return this.http.post<AuthResponse>(
+            'http://localhost:3000/user/login',
+            { 
+                email: email,
+                password: password
+            }).pipe(
+                    catchError(this.handleError),
+                    tap(resData => {
+                        this.handleAuthentication(resData.email)
+                    })
+            )
+    }
+    
+    logout(){
+        this.user.next(null);
+        this.router.navigate(['/auth']);
+        localStorage.removeItem('userData');
+    }
+    private handleAuthentication(
+        email:string
+    ){
+        const user = new User(email);
+        this.user.next(user);
+        localStorage.setItem('userData',JSON.stringify(user));
 
-//     }
+    }
 
-//     private handleError(errorRes: HttpErrorResponse){
-        
-//             let  errorMessage='An unexpected Error Occur';
-
-//             if(!errorRes.error || !errorRes.error.error)
-//             {
-
-//             }
-
-//             if(errorRes.error.error.message){
-//                 errorMessage = ''
-//             }
-
-//             switch(errorRes.error.error.message){
-//              case 'EMAIL_EXISTS':
-//                 errorMessage = 'Email address already exists'
-//                 break
-//              case 'EMAIL_NOT_FOUND':
-//                 errorMessage = 'This email not registered!'
-//                 break
-//              case 'INVALID_PASSWORD':
-//                 errorMessage = 'Wrong password!'
-//                 break
-//            }
-//             return throwError(errorMessage);
-         
-//     }
+    private handleError(errorRes: HttpErrorResponse) {
+        let errorMessage = 'An unexpected error occurred';
+      
+        if (errorRes.error && errorRes.error.message) {
+          switch (errorRes.error.message) {
+            case 'Email_Exists':
+              errorMessage = 'Email address already exists';
+              break;
+            case 'Wrong_Password_or_Username':
+              errorMessage = 'Wrong Username or Password!';
+              break;
+          }
+        }
+      
+        return throwError(errorMessage);
+      }
+      
+      
 
 
-// }
+}
